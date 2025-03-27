@@ -1,0 +1,52 @@
+version: '3.8'
+
+services:
+  redis:
+    image: redis:7-alpine
+    container_name: scalping_redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 3
+    networks:
+      - trading_network
+
+  trading_bot:
+    build:
+      context: ../.
+      dockerfile: docker/Dockerfile
+    container_name: scalping_bot
+    depends_on:
+      redis:
+        condition: service_healthy
+    env_file:
+      - ../.env
+    volumes:
+      - ../:/app
+    ports:
+      - "8000:8000"  # For monitoring dashboard
+    networks:
+      - trading_network
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 2G
+    healthcheck:
+      test: ["CMD", "python", "scripts/initialize.py"]
+      interval: 60s
+      timeout: 30s
+      retries: 3
+
+volumes:
+  redis_data:
+
+networks:
+  trading_network:
+    driver: bridge
