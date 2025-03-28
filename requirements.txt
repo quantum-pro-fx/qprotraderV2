@@ -1,0 +1,20 @@
+# Core Packages
+python-dotenv==1.1.0
+numpy==2.0.2
+pandas==2.2.3
+
+# OANDA API
+oandapyV20==0.7.2
+
+# Machine Learning
+torch==2.6.0
+gymnasium==1.1.1
+
+# Async/Networking
+aiohttp==3.11.14
+
+# Development
+pytest==8.3.5
+black==25.1.0
+
+requests==2.31.0
